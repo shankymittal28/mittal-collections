@@ -1,880 +1,229 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIOS — Mittal Intelligence OS</title>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mittal Collections</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh;}
-
-/* PIN */
-.pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:22px;padding:24px;background:#fff;}
-.pin-logo{font-size:13px;font-weight:700;color:#888;letter-spacing:0.1em;text-transform:uppercase;}
-.pin-title{font-size:22px;font-weight:600;color:#1a1a1a;text-align:center;}
-.pin-sub{font-size:14px;color:#888;text-align:center;}
-.pin-dots{display:flex;gap:14px;margin:4px 0;}
-.dot{width:16px;height:16px;border-radius:50%;border:2px solid #ccc;background:transparent;transition:background 0.1s;}
-.dot.on{background:#1a1a1a;border-color:#1a1a1a;}
-.keypad{display:grid;grid-template-columns:repeat(3,80px);gap:12px;}
-.key{height:62px;width:80px;font-size:22px;font-weight:500;border-radius:12px;cursor:pointer;color:#1a1a1a;background:#f5f5f5;border:1px solid #e0e0e0;transition:background 0.1s;}
-.key:active{background:#e0e0e0;}
-.pin-err{font-size:13px;color:#c0392b;min-height:20px;text-align:center;}
-
-/* APP */
-.app{display:none;max-width:900px;margin:0 auto;padding:14px;}
-
-/* TOPBAR */
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:12px 16px;background:#fff;border-radius:12px;border:1px solid #e8e8e8;}
-.topbar-title{font-size:17px;font-weight:700;color:#1a1a1a;}
-.topbar-sub{font-size:11px;color:#888;margin-top:2px;}
-.topbar-right{display:flex;align-items:center;gap:8px;}
-.sync-badge{font-size:11px;color:#888;padding:4px 8px;background:#f5f5f5;border-radius:6px;border:1px solid #e0e0e0;}
-.refresh-btn{padding:7px 14px;font-size:13px;border-radius:8px;cursor:pointer;background:#f5f5f5;border:1px solid #e0e0e0;color:#1a1a1a;}
-
-/* TABS */
-.tab-bar{display:flex;gap:0;margin-bottom:14px;background:#fff;border:1px solid #e8e8e8;border-radius:12px;overflow:hidden;}
-.tab-btn{flex:1;padding:11px 8px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#888;transition:all 0.15s;}
-.tab-btn.active{background:#1a1a1a;color:#fff;}
-.tab-panel{display:none;}
-.tab-panel.active{display:block;}
-
-/* KPIs */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px;}
-.kpi{background:#fff;border-radius:10px;padding:13px 15px;border:1px solid #e8e8e8;}
-.kpi-lbl{font-size:10px;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em;}
-.kpi-val{font-size:19px;font-weight:700;color:#1a1a1a;}
-.kpi-val.blue{color:#2471a3;}
-.kpi-val.red{color:#c0392b;}
-.kpi-val.grn{color:#27ae60;}
-
-/* CONTROLS */
-.controls{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
-.controls input[type=text]{flex:1;min-width:160px;height:36px;padding:0 12px;font-size:13px;border:1px solid #e0e0e0;border-radius:8px;outline:none;background:#fff;}
-.controls select{height:36px;padding:0 10px;font-size:13px;border:1px solid #e0e0e0;border-radius:8px;background:#fff;cursor:pointer;outline:none;}
-.filter-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
-.filter-row select{height:34px;padding:0 10px;font-size:12px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;cursor:pointer;outline:none;}
-.filter-row input[type=number]{height:34px;width:110px;padding:0 8px;font-size:12px;border:1px solid #e0e0e0;border-radius:7px;outline:none;}
-.filter-row span{font-size:12px;color:#888;align-self:center;}
-
-/* LIST */
-.clist{background:#fff;border:1px solid #e8e8e8;border-radius:12px;overflow:hidden;}
-.chead{display:grid;grid-template-columns:1fr 110px 110px 80px;padding:8px 14px;background:#fafafa;border-bottom:1px solid #e8e8e8;gap:8px;}
-.chead span{font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}
-.chead span:not(:first-child){text-align:right;}
-.crow{display:grid;grid-template-columns:1fr 110px 110px 80px;align-items:center;padding:11px 14px;cursor:pointer;gap:8px;border-top:1px solid #f0f0f0;transition:background 0.1s;}
-.crow:hover{background:#fafafa;}
-.cn{font-size:14px;font-weight:500;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cm{font-size:11px;color:#888;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ca{font-size:14px;font-weight:600;text-align:right;}
-.ca.pos{color:#2471a3;}
-.ca.neg{color:#aaa;}
-.cl{font-size:11px;color:#888;text-align:right;}
-.badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;display:inline-block;}
-.bh{background:#fde8e8;color:#a93226;}
-.bm{background:#fef5e7;color:#935116;}
-.bl{background:#eafaf1;color:#1e8449;}
-.bz{background:#f0f0f0;color:#888;}
-.pgn{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;padding-bottom:20px;}
-.pgn button{padding:7px 16px;font-size:13px;border-radius:8px;cursor:pointer;background:#fff;border:1px solid #e0e0e0;}
-.pgn button:disabled{opacity:0.4;cursor:not-allowed;}
-.pgn span{font-size:13px;color:#888;}
-.msg{text-align:center;padding:40px;color:#888;font-size:14px;}
-.res-count{font-size:12px;color:#888;margin-bottom:8px;}
-
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;display:none;}
-.modal{position:fixed;right:0;top:0;bottom:0;width:min(520px,100%);background:#fff;z-index:101;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;border-left:1px solid #e8e8e8;box-shadow:-4px 0 20px rgba(0,0,0,0.08);}
-.modal-header{display:flex;justify-content:space-between;align-items:flex-start;}
-.mclose{background:none;border:none;cursor:pointer;font-size:22px;color:#888;padding:2px 6px;line-height:1;}
-.mname{font-size:18px;font-weight:700;color:#1a1a1a;}
-.mamt{font-size:28px;font-weight:700;color:#2471a3;margin-top:3px;}
-.mmeta{font-size:12px;color:#888;}
-.msec{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:7px;margin-top:4px;}
-.mform{display:flex;flex-direction:column;gap:10px;background:#fafafa;border-radius:10px;padding:14px;border:1px solid #e8e8e8;}
-.mform label{font-size:12px;color:#888;display:block;margin-bottom:3px;}
-.mform select,.mform input,.mform textarea{font-size:13px;width:100%;height:34px;padding:0 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;outline:none;font-family:inherit;}
-.mform textarea{height:60px;padding:8px 10px;resize:vertical;}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.sbtn{padding:11px;font-size:14px;font-weight:600;background:#1a1a1a;color:#fff;border:none;border-radius:10px;cursor:pointer;width:100%;}
-.sbtn:disabled{opacity:0.5;cursor:not-allowed;}
-.action-row{display:flex;gap:8px;}
-.abtn{flex:1;padding:10px;font-size:13px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:500;}
-.abtn-call{background:#eafaf1;color:#1e8449;border:1px solid #a9dfbf;}
-.abtn-wa{background:#e8f8f5;color:#0e6655;border:1px solid #a2d9ce;}
-.abtn:disabled{opacity:0.4;cursor:not-allowed;}
-.tlist{border:1px solid #e8e8e8;border-radius:8px;overflow:hidden;}
-.trow{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;font-size:12px;}
-.trow:nth-child(even){background:#fafafa;}
-.tt{font-weight:500;color:#1a1a1a;}
-.td{color:#888;font-size:11px;}
-.ta-s{color:#2471a3;font-weight:600;}
-.ta-r{color:#27ae60;font-weight:600;}
-.escflag{display:inline-block;background:#fde8e8;color:#a93226;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px;}
-
-/* KNOWLEDGE ENGINE */
-.ke-section{margin-bottom:20px;}
-.ke-stitle{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #f0f0f0;}
-.ke-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
-.ke-filters input[type=text]{flex:1;min-width:160px;height:34px;padding:0 12px;font-size:13px;border:1px solid #e0e0e0;border-radius:8px;outline:none;}
-.ke-filters select{height:34px;padding:0 10px;font-size:13px;border:1px solid #e0e0e0;border-radius:8px;background:#fff;cursor:pointer;outline:none;}
-.ke-card{background:#fff;border:1px solid #e8e8e8;border-radius:10px;padding:13px 15px;margin-bottom:10px;}
-.ke-ch{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px;}
-.ke-ct{font-size:14px;font-weight:600;color:#1a1a1a;flex:1;}
-.ke-cb{font-size:13px;color:#444;line-height:1.5;margin-bottom:6px;}
-.ke-cm{font-size:11px;color:#aaa;display:flex;gap:10px;flex-wrap:wrap;}
-.ke-ev{font-size:11px;color:#888;font-style:italic;margin-bottom:4px;}
-.kbadge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;}
-.kb-truth{background:#e8f4fd;color:#1a6ea8;}
-.kb-discovery{background:#f0f9f0;color:#1e7e34;}
-.kb-decision{background:#fff3e0;color:#b85c00;}
-.kb-experiment{background:#f3e8ff;color:#6b21a8;}
-.kb-pattern{background:#fff0f0;color:#b91c1c;}
-.kb-rule{background:#e8e8ff;color:#3730a3;}
-.ke-actions{display:flex;gap:8px;margin-top:8px;}
-.ke-btn{padding:5px 12px;font-size:12px;font-weight:600;border-radius:7px;cursor:pointer;border:1px solid #e0e0e0;background:#f5f5f5;color:#1a1a1a;}
-.ke-approve{background:#eafaf1;color:#1e8449;border-color:#a9dfbf;}
-.ke-reject{background:#fde8e8;color:#a93226;border-color:#f5b7b1;}
-.ke-empty{text-align:center;padding:28px;color:#aaa;font-size:13px;}
-.ke-count{font-size:12px;color:#888;margin-bottom:8px;}
-.ke-form{background:#fafafa;border:1px solid #e8e8e8;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;}
-.ke-form label{font-size:12px;color:#888;display:block;margin-bottom:3px;}
-.ke-form input,.ke-form select,.ke-form textarea{font-size:13px;width:100%;padding:8px 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;outline:none;font-family:inherit;}
-.ke-form input{height:34px;padding:0 10px;}
-.ke-form textarea{height:72px;resize:vertical;}
-.ke-frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.ke-submit{padding:11px;font-size:14px;font-weight:600;background:#1a1a1a;color:#fff;border:none;border-radius:10px;cursor:pointer;}
-
-/* TOAST */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:10px;font-size:14px;z-index:300;opacity:0;transition:opacity 0.2s;pointer-events:none;white-space:nowrap;}
-.toast.show{opacity:1;}
-
-@media(max-width:600px){
-  .chead,.crow{grid-template-columns:1fr 90px 70px;}
-  .chead span:nth-child(2),.crow>div:nth-child(2){display:none;}
-  .app{padding:10px;}
-  .modal{width:100%;}
-  .frow,.ke-frow{grid-template-columns:1fr;}
-}
-</style>
-</head>
+:root{--bg:#0f172a;--card:#1e293b;--line:#334155;--ink:#e2e8f0;--mut:#94a3b8;--acc:#38bdf8;--ok:#22c55e;--warn:#f59e0b;--red:#ef4444}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
+header{position:sticky;top:0;background:#0b1220;border-bottom:1px solid var(--line);padding:10px 12px;z-index:5}
+h1{font-size:16px;margin:0 0 8px}
+.tabs{display:flex;gap:6px}
+.tab{flex:1;padding:9px;border:1px solid var(--line);background:var(--card);color:var(--mut);border-radius:8px;text-align:center;font-weight:bold;cursor:pointer;font-size:13px}
+.tab.on{background:var(--acc);color:#04293a;border-color:var(--acc)}
+.wrap{padding:12px;max-width:820px;margin:0 auto}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px;text-align:center}
+.kpi b{display:block;font-size:18px}
+.kpi span{font-size:10px;color:var(--mut)}
+.note{font-size:12px;color:var(--mut);line-height:1.5}
+.lanebar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
+.lb{white-space:nowrap;padding:7px 10px;border:1px solid var(--line);background:var(--card);color:var(--mut);border-radius:20px;font-size:12px;cursor:pointer}
+.lb.on{background:var(--acc);color:#04293a;border-color:var(--acc)}
+input,select,textarea{font-size:15px;background:#0b1220;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:8px;width:100%}
+.search{margin-bottom:10px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
+.row .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.nm{font-weight:bold}
+.bal{color:var(--warn);white-space:nowrap;font-size:13px}
+.meta{font-size:12px;color:var(--mut);margin-top:3px}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;margin-right:5px}
+.l1{background:#7f1d1d;color:#fecaca}.l2{background:#7c2d12;color:#fed7aa}.l3{background:#78350f;color:#fde68a}.l4{background:#3730a3;color:#c7d2fe}.l5{background:#334155;color:#cbd5e1}
+.ph-no{color:var(--red)}.ph-yes{color:var(--ok)}
+.act{background:var(--acc);color:#04293a;border:none;border-radius:8px;padding:11px;font-weight:bold;width:100%;font-size:15px;cursor:pointer}
+.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc)}
+.bar{display:flex;gap:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut)}.chk input{width:auto}
+label{font-size:12px;color:var(--mut);display:block;margin:6px 0 2px}
+.hide{display:none}
+.unsaved{font-size:11px;color:var(--warn);margin-top:4px}
+.pill{font-size:11px;background:#0b1220;border:1px solid var(--line);border-radius:20px;padding:2px 8px;color:var(--mut)}
+#gate{position:fixed;inset:0;background:#0b1220;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:50;padding:24px}
+#gate input{max-width:200px;text-align:center;font-size:22px;letter-spacing:6px}
+.flog{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:6px;font-size:13px}
+</style></head>
 <body>
 
-<!-- PIN SCREEN -->
-<div class="pin-screen" id="PIN">
-  <div class="pin-logo">Mittal Hardware</div>
-  <div style="font-size:44px;color:#ccc;">🔒</div>
-  <div>
-    <div class="pin-title">MIOS</div>
-    <div class="pin-sub" style="margin-top:6px">Enter your 4-digit PIN</div>
-  </div>
-  <div class="pin-dots">
-    <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
-    <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
-  </div>
-  <div class="pin-err" id="PERR">&nbsp;</div>
-  <div class="keypad" id="KEYPAD">
-    <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
-    <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
-    <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
-    <button class="key" data-k="clr" style="font-size:14px">Clear</button>
-    <button class="key" data-k="0">0</button>
-    <button class="key" data-k="del" style="font-size:14px">⌫</button>
-  </div>
+<div id="gate">
+  <h1>Mittal Collections</h1>
+  <input id="pin" type="password" inputmode="numeric" placeholder="PIN" maxlength="6">
+  <button class="act" style="max-width:200px" onclick="checkPin()">Open</button>
+  <div class="note" id="pinmsg"></div>
 </div>
 
-<!-- APP -->
-<div class="app" id="APP">
-  <div class="topbar">
-    <div>
-      <div class="topbar-title">MIOS</div>
-      <div class="topbar-sub" id="SYNC">—</div>
-    </div>
-    <div class="topbar-right">
-      <span class="sync-badge" id="SYNC_TIME">Sync: —</span>
-      <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
-    </div>
-  </div>
+<header>
+<h1>Mittal Collections</h1>
+<div class="tabs">
+<div class="tab on" id="tb1" onclick="show(1)">Daily Queue</div>
+<div class="tab" id="tb2" onclick="show(2)">Phone Capture</div>
+<div class="tab" id="tb3" onclick="show(3)">Follow-up Log</div>
+</div>
+</header>
 
-  <div class="tab-bar">
-    <button class="tab-btn active" id="TB_COL" onclick="switchTab('col')">📋 Collections</button>
-    <button class="tab-btn" id="TB_KE" onclick="switchTab('ke')">🧠 Knowledge</button>
-  </div>
+<div class="wrap">
+<div class="cards">
+<div class="kpi"><b id="k_total">-</b><span>Queue items</span></div>
+<div class="kpi"><b id="k_bnp">-</b><span>Buying not paying</span></div>
+<div class="kpi"><b id="k_hbn">-</b><span>High bal, no contact</span></div>
+<div class="kpi"><b id="k_due">-</b><span>Promise due today</span></div>
+<div class="kpi"><b id="k_brk">-</b><span>Broken promise</span></div>
+<div class="kpi"><b id="k_ph">0</b><span>Phones today</span></div>
+<div class="kpi"><b id="k_fl">0</b><span>Follow-ups today</span></div>
+<div class="kpi"><b id="k_dbfl">0</b><span>DB follow-ups</span></div>
+</div>
+<div id="dbnote" class="note" style="margin-bottom:10px"></div>
 
-  <!-- COLLECTIONS TAB -->
-  <div class="tab-panel active" id="TP_COL">
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-lbl">Total Outstanding</div><div class="kpi-val blue" id="K1">—</div></div>
-      <div class="kpi"><div class="kpi-lbl">With Balance</div><div class="kpi-val red" id="K2">—</div></div>
-      <div class="kpi"><div class="kpi-lbl">High Risk 90+</div><div class="kpi-val red" id="K3">—</div></div>
-      <div class="kpi"><div class="kpi-lbl">Promised Today</div><div class="kpi-val grn" id="K4">—</div></div>
-    </div>
-
-    <!-- SEARCH + SORT -->
-    <div class="controls">
-      <input type="text" id="SEARCH" placeholder="🔍  Search name or phone..." oninput="applyF()">
-      <select id="SORT" onchange="applyF()">
-        <option value="amt">Highest Outstanding</option>
-        <option value="priority">Priority Score</option>
-        <option value="overdue">Most Overdue Days</option>
-        <option value="followup">Next Follow-up</option>
-        <option value="name">Name A–Z</option>
-      </select>
-    </div>
-
-    <!-- FILTERS -->
-    <div class="filter-row">
-      <select id="FILT" onchange="applyF()">
-        <option value="all">All Customers</option>
-        <option value="bal" selected>Has Outstanding</option>
-        <option value="ov60">Overdue 60+ Days</option>
-        <option value="ov90">Overdue 90+ Days</option>
-        <option value="pr">Promised Today</option>
-        <option value="esc">Escalation Required</option>
-        <option value="nophone">No Phone</option>
-      </select>
-      <select id="TYPT" onchange="applyF()">
-        <option value="all">All Types</option>
-        <option value="Wholesale">Wholesale</option>
-        <option value="Regular">Regular</option>
-        <option value="unknown">Unknown</option>
-      </select>
-      <select id="HLTH" onchange="applyF()">
-        <option value="all">All Health</option>
-        <option value="Critical">Critical</option>
-        <option value="Watch">Watch</option>
-        <option value="Good">Good</option>
-      </select>
-      <span>₹</span>
-      <input type="number" id="AMT_MIN" placeholder="Min" oninput="applyF()" style="width:90px">
-      <span>–</span>
-      <input type="number" id="AMT_MAX" placeholder="Max" oninput="applyF()" style="width:90px">
-    </div>
-
-    <div class="res-count" id="RES_COUNT"></div>
-
-    <div class="clist">
-      <div class="chead">
-        <span>Customer</span>
-        <span>Last Contact</span>
-        <span>Outstanding</span>
-        <span>Status</span>
-      </div>
-      <div id="LIST"><div class="msg">Loading...</div></div>
-    </div>
-    <div class="pgn" id="PGN"></div>
-  </div><!-- /TP_COL -->
-
-  <!-- KNOWLEDGE TAB -->
-  <div class="tab-panel" id="TP_KE">
-    <div class="ke-section">
-      <div class="ke-stitle">Active Knowledge</div>
-      <div class="ke-filters">
-        <input type="text" id="KE_SEARCH" placeholder="🔍  Search knowledge..." oninput="keFilter()">
-        <select id="KE_TYPE" onchange="keFilter()">
-          <option value="all">All Types</option>
-          <option value="truth">Truth</option>
-          <option value="discovery">Discovery</option>
-          <option value="decision">Decision</option>
-          <option value="experiment">Experiment</option>
-          <option value="pattern">Pattern</option>
-          <option value="rule">Rule</option>
-        </select>
-        <select id="KE_DOM" onchange="keFilter()">
-          <option value="all">All Domains</option>
-          <option value="collections">Collections</option>
-          <option value="customers">Customers</option>
-          <option value="tally">Tally</option>
-          <option value="technology">Technology</option>
-          <option value="operations">Operations</option>
-          <option value="staff">Staff</option>
-          <option value="finance">Finance</option>
-        </select>
-      </div>
-      <div class="ke-count" id="KE_COUNT"></div>
-      <div id="KE_ACTIVE"></div>
-    </div>
-    <div class="ke-section">
-      <div class="ke-stitle">Pending Approval</div>
-      <div id="KE_PENDING"></div>
-    </div>
-    <div class="ke-section">
-      <div class="ke-stitle">Add Knowledge</div>
-      <div class="ke-form">
-        <div class="ke-frow">
-          <div><label>Type</label><select id="KF_TYPE"><option value="discovery">Discovery</option><option value="truth">Operational Truth</option><option value="decision">Decision</option><option value="experiment">Experiment</option><option value="pattern">Pattern</option></select></div>
-          <div><label>Domain</label><select id="KF_DOM"><option value="collections">Collections</option><option value="customers">Customers</option><option value="tally">Tally</option><option value="technology">Technology</option><option value="operations">Operations</option><option value="staff">Staff</option><option value="finance">Finance</option></select></div>
-        </div>
-        <div><label>Title</label><input type="text" id="KF_TITLE" placeholder="Short clear title"></div>
-        <div><label>Description</label><textarea id="KF_BODY" placeholder="What was learned or discovered?"></textarea></div>
-        <div><label>Evidence / Source (optional)</label><input type="text" id="KF_EV" placeholder="What supports this?"></div>
-        <div class="ke-frow">
-          <div><label>Confidence</label><select id="KF_CONF"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="confirmed">Confirmed</option></select></div>
-          <div><label>Risk</label><select id="KF_RISK"><option value="low" selected>Low — auto approve</option><option value="medium">Medium — needs approval</option><option value="high">High — needs approval</option></select></div>
-        </div>
-        <button class="ke-submit" id="KF_SUB" onclick="submitKE()">Save to Knowledge Engine</button>
-      </div>
-    </div>
-  </div><!-- /TP_KE -->
-
-</div><!-- /APP -->
-
-<!-- CUSTOMER MODAL -->
-<div class="overlay" id="OVL" onclick="closeModal(event)"></div>
-<div class="modal" id="MOD" style="display:none">
-  <div class="modal-header">
-    <div>
-      <div class="mname" id="M_NAME">—</div>
-      <div class="mamt" id="M_AMT">—</div>
-      <div class="mmeta" id="M_META">—</div>
-    </div>
-    <button class="mclose" onclick="closeModal()">✕</button>
-  </div>
-
-  <div class="action-row">
-    <button class="abtn abtn-call" id="M_CALL" onclick="doCall()">📞 Call</button>
-    <button class="abtn abtn-wa" id="M_WA" onclick="doWA()">💬 WhatsApp</button>
-  </div>
-
-  <!-- TRANSACTION HISTORY -->
-  <div>
-    <div class="msec">Recent Transactions</div>
-    <div id="M_TXN"><div class="msg" style="padding:16px">Loading...</div></div>
-  </div>
-
-  <!-- FOLLOW-UP LOG -->
-  <div>
-    <div class="msec">Log Follow-up</div>
-    <div class="mform">
-      <div class="frow">
-        <div>
-          <label>Outcome</label>
-          <select id="L_OUT">
-            <option value="">Select outcome</option>
-            <option value="paid_full">Paid Full</option>
-            <option value="paid_partial">Paid Partial</option>
-            <option value="promised">Promised Payment</option>
-            <option value="broke_promise">Broke Promise</option>
-            <option value="ignored">Ignored / No Response</option>
-            <option value="unreachable">Unreachable</option>
-            <option value="disputed">Disputed Amount</option>
-            <option value="asked_time">Asked for More Time</option>
-            <option value="call_later">Call Later</option>
-          </select>
-        </div>
-        <div>
-          <label>Channel</label>
-          <select id="L_CH">
-            <option value="call">Call</option>
-            <option value="whatsapp">WhatsApp</option>
-            <option value="visit">Visit</option>
-            <option value="message">SMS</option>
-          </select>
-        </div>
-      </div>
-      <div><label>Notes</label><textarea id="L_NOTE" placeholder="What happened? Any details..."></textarea></div>
-      <div class="frow">
-        <div><label>Promise Date</label><input type="date" id="L_PD"></div>
-        <div><label>Promise Amount ₹</label><input type="number" id="L_PA" placeholder="0"></div>
-      </div>
-      <div class="frow">
-        <div><label>Promise Status</label>
-          <select id="L_PS">
-            <option value="">None</option>
-            <option value="pending">Pending</option>
-            <option value="kept">Kept</option>
-            <option value="broken">Broken</option>
-          </select>
-        </div>
-        <div><label>Next Follow-up</label><input type="date" id="L_NF"></div>
-      </div>
-      <button class="sbtn" id="L_SAVE" onclick="saveLog()">Save Follow-up Log</button>
-    </div>
-  </div>
-
-  <!-- QUICK EDIT -->
-  <div>
-    <div class="msec">Customer Details</div>
-    <div class="mform">
-      <div class="frow">
-        <div><label>Phone</label><input type="tel" id="E_PHONE" placeholder="+91..."></div>
-        <div><label>Type</label>
-          <select id="E_TYPE">
-            <option value="Regular">Regular</option>
-            <option value="Wholesale">Wholesale</option>
-            <option value="unknown">Unknown</option>
-          </select>
-        </div>
-      </div>
-      <div class="frow">
-        <div><label>Risk Level</label>
-          <select id="E_RISK">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="critical">Critical</option>
-          </select>
-        </div>
-        <div><label>Health</label>
-          <select id="E_HEALTH">
-            <option value="Good">Good</option>
-            <option value="Watch">Watch</option>
-            <option value="Critical">Critical</option>
-          </select>
-        </div>
-      </div>
-      <div class="frow">
-        <div><label>Trust Level</label>
-          <select id="E_TRUST">
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-        <div><label>Relationship</label>
-          <select id="E_REL">
-            <option value="strong">Strong</option>
-            <option value="medium">Medium</option>
-            <option value="weak">Weak</option>
-          </select>
-        </div>
-      </div>
-      <div class="frow">
-        <div><label>Preferred Contact Time</label>
-          <select id="E_PCT">
-            <option value="">Not set</option>
-            <option value="morning">Morning (8–11am)</option>
-            <option value="afternoon">Afternoon (11–3pm)</option>
-            <option value="evening">Evening (3–7pm)</option>
-          </select>
-        </div>
-        <div><label>Priority Override (1–10)</label><input type="number" id="E_PRIO" min="1" max="10" placeholder="Auto"></div>
-      </div>
-      <div><label>Escalation Required</label>
-        <select id="E_ESC">
-          <option value="false">No</option>
-          <option value="true">Yes — Escalate</option>
-        </select>
-      </div>
-      <div><label>Owner Notes</label><textarea id="E_NOTES" placeholder="Private notes about this customer..."></textarea></div>
-      <button class="sbtn" id="E_SAVE" onclick="saveCustomer()">Save Customer Details</button>
-    </div>
-  </div>
-
+<div id="p1">
+<div class="lanebar" id="lanebar"></div>
+<input class="search" id="q1" placeholder="Search name..." oninput="renderQueue()">
+<div id="qstatus" class="note">Loading queue...</div>
+<div id="qlist"></div>
 </div>
 
-<div class="toast" id="TOAST"></div>
+<div id="p2" class="hide">
+<div class="note" style="margin-bottom:8px">Capture saves on THIS device only. Tap "Copy for Claude" and paste in chat &mdash; Claude writes to the database safely. No password lives in this app.</div>
+<input class="search" id="q2" placeholder="Search name..." oninput="renderPhones()">
+<div id="plist"></div>
+<div class="bar"><button class="act ghost" onclick="copyForClaude()">Copy for Claude</button><button class="act ghost" onclick="downloadCsv()">Download CSV</button></div>
+</div>
+
+<div id="p3" class="hide">
+<div class="note" style="margin-bottom:8px"><b id="flcount">0</b> follow-ups logged on this device today. <span class="unsaved">Not yet saved to database &mdash; export/copy for Claude write.</span></div>
+<label>Customer</label>
+<input id="f_cust" list="custlist" placeholder="Type or pick a name">
+<datalist id="custlist"></datalist>
+<div class="grid">
+<div><label>Channel</label><select id="f_chan"><option>call</option><option>whatsapp</option><option>visit</option><option>sms</option><option>other</option></select></div>
+<div><label>Outcome</label><select id="f_out">
+<option>promised_payment</option><option>paid_partial</option><option>paid_full</option><option>no_answer</option><option>will_call_back</option><option>asked_for_time</option><option>disputed_amount</option><option>not_reachable</option><option>wrong_number</option><option>broken_promise</option></select></div>
+<div><label>Promise amount (Rs)</label><input id="f_pamt" type="number" inputmode="numeric"></div>
+<div><label>Promise date</label><input id="f_pdate" type="date"></div>
+<div><label>Amount collected (Rs)</label><input id="f_coll" type="number" inputmode="numeric"></div>
+<div><label>&nbsp;</label><span class="pill" id="today"></span></div>
+</div>
+<label>Notes</label><textarea id="f_notes" rows="2" placeholder="What was agreed / context"></textarea>
+<div class="bar"><button class="act" onclick="saveLog()">Save follow-up</button></div>
+<div class="bar"><button class="act ghost" onclick="copyForClaude()">Copy for Claude</button><button class="act ghost" onclick="downloadCsv()">Download CSV</button></div>
+<div id="floglist"></div>
+</div>
+</div>
 
 <script>
-const SURL='https://bsjrihrekfsxmajdsyhc.supabase.co';
-const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzanJpaHJla2ZzeG1hamRzeWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTU2NDMsImV4cCI6MjA5NjU3MTY0M30.IZppzvvVOkeXjiDy-sJw5P37nxpHlSZUx8O8BdIBMkU';
-const PIN='2812';
-let pinVal='',lockUntil=0,attempts=0;
-let all=[],fil=[],page=1;
-const PER=50;
-let cur=null;
-let keAll=[];
+const SB_URL="https://bsjrihrekfsxmajdsyhc.supabase.co";
+const SB_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzanJpaHJla2ZzeG1hamRzeWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTU2NDMsImV4cCI6MjA5NjU3MTY0M30.IZppzvvVOkeXjiDy-sJw5P37nxpHlSZUx8O8BdIBMkU";
+const GATE_PIN="2812";
+const inr=n=>n==null?'':Number(n).toLocaleString('en-IN');
+const todayStr=()=>new Date().toISOString().slice(0,10);
+document.getElementById('today').textContent=todayStr();
+let QUEUE=[], laneFilter='All';
+let phones=JSON.parse(localStorage.getItem('mh_phones')||'{}');
+let logs=JSON.parse(localStorage.getItem('mh_logs')||'[]');
 
-// ── PIN ──
-document.getElementById('KEYPAD').addEventListener('click',function(e){
-  var k=e.target.dataset.k;
-  if(!k) return;
-  if(Date.now()<lockUntil){document.getElementById('PERR').textContent='Locked. Try later.';return;}
-  if(k==='clr'){pinVal='';} else if(k==='del'){pinVal=pinVal.slice(0,-1);} else if(pinVal.length<4){pinVal+=k;}
-  [0,1,2,3].forEach(function(i){document.getElementById('d'+i).classList.toggle('on',i<pinVal.length);});
-  if(pinVal.length===4){
-    if(pinVal===PIN){
-      document.getElementById('PIN').style.display='none';
-      document.getElementById('APP').style.display='block';
-      loadData();loadSyncTime();
-    } else {
-      attempts++;
-      if(attempts>=3){lockUntil=Date.now()+300000;document.getElementById('PERR').textContent='Too many attempts. Wait 5 min.';}
-      else{document.getElementById('PERR').textContent='Wrong PIN ('+(3-attempts)+' left)';}
-      pinVal='';
-      [0,1,2,3].forEach(function(i){document.getElementById('d'+i).classList.remove('on');});
-    }
-  } else {document.getElementById('PERR').textContent='\u00a0';}
-});
+function checkPin(){if(document.getElementById('pin').value===GATE_PIN){document.getElementById('gate').style.display='none';boot();}else{document.getElementById('pinmsg').textContent='Wrong PIN';}}
+document.getElementById('pin').addEventListener('keydown',e=>{if(e.key==='Enter')checkPin();});
 
-// ── API ──
-async function sbGet(path){
-  var headers={'apikey':SKEY,'Authorization':'Bearer '+SKEY};
-  var url=SURL+'/rest/v1/'+path;
-  var r=await fetch(url,{headers:headers});
-  return r.json();
+function show(n){[1,2,3].forEach(i=>{document.getElementById('tb'+i).classList.toggle('on',i===n);document.getElementById('p'+i).classList.toggle('hide',i!==n);});}
+
+const ACTION={'Promise due today':'Confirm payment today','Broken promise':'Firm follow-up; re-promise','No answer - recall':'Call again / other channel','Buying not paying':'Credit hold review; ask payment','High balance, not contacted':'First contact; get phone + ask payment'};
+const LANES=['All','Promise due today','Broken promise','No answer - recall','Buying not paying','High balance, not contacted'];
+const LCLASS={'Promise due today':'l1','Broken promise':'l2','No answer - recall':'l3','Buying not paying':'l4','High balance, not contacted':'l5'};
+
+async function boot(){
+ renderLanes();renderPhones();renderLogs();
+ try{
+  const r=await fetch(SB_URL+"/rest/v1/daily_collections_queue?select=*&order=lane_order.asc,outstanding.desc",{headers:{apikey:SB_ANON,Authorization:"Bearer "+SB_ANON}});
+  QUEUE=await r.json();
+  if(!Array.isArray(QUEUE))throw new Error('bad');
+  document.getElementById('qstatus').textContent='';
+ }catch(e){document.getElementById('qstatus').textContent='Could not load queue. Check connection.';QUEUE=[];}
+ try{const r2=await fetch(SB_URL+"/rest/v1/follow_up_logs?select=id",{headers:{apikey:SB_ANON,Authorization:"Bearer "+SB_ANON,Prefer:"count=exact",Range:"0-0"}});
+  const cr=r2.headers.get('content-range');const dbn=cr?parseInt(cr.split('/')[1]):0;
+  document.getElementById('k_dbfl').textContent=isNaN(dbn)?0:dbn;
+  document.getElementById('dbnote').textContent=(dbn>0)?'':'No real follow-up records yet in the database. Logs captured here are local until exported and written.';
+ }catch(e){}
+ kpis();renderQueue();fillDatalist();
 }
-async function sbGetAll(path){
-  var all=[],from=0,size=1000;
-  while(true){
-    var r=await fetch(SURL+'/rest/v1/'+path,{headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY,'Range':from+'-'+(from+size-1),'Prefer':'count=none'}});
-    var d=await r.json();
-    if(!Array.isArray(d)||!d.length) break;
-    all=all.concat(d);
-    if(d.length<size) break;
-    from+=size;
-  }
-  return all;
+function kpis(){
+ document.getElementById('k_total').textContent=QUEUE.length;
+ const c=l=>QUEUE.filter(x=>x.lane===l).length;
+ document.getElementById('k_bnp').textContent=c('Buying not paying');
+ document.getElementById('k_hbn').textContent=c('High balance, not contacted');
+ document.getElementById('k_due').textContent=c('Promise due today');
+ document.getElementById('k_brk').textContent=c('Broken promise');
+ document.getElementById('k_ph').textContent=Object.values(phones).filter(p=>p.phone&&p.date===todayStr()).length;
+ document.getElementById('k_fl').textContent=logs.filter(l=>(l.logged_at||'').slice(0,10)===todayStr()).length;
 }
-async function sbPatch(table,id,body){
-  var r=await fetch(SURL+'/rest/v1/'+table+'?id=eq.'+id,{method:'PATCH',headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
-  return r.ok;
+function renderLanes(){const b=document.getElementById('lanebar');b.innerHTML='';
+ LANES.forEach(l=>{const d=document.createElement('div');d.className='lb'+(l===laneFilter?' on':'');d.textContent=l;d.onclick=()=>{laneFilter=l;renderLanes();renderQueue();};b.appendChild(d);});}
+function renderQueue(){
+ const q=(document.getElementById('q1').value||'').toLowerCase();
+ const L=document.getElementById('qlist');L.innerHTML='';
+ let rows=QUEUE.filter(x=>laneFilter==='All'||x.lane===laneFilter).filter(x=>(x.tally_name||'').toLowerCase().includes(q));
+ if(!rows.length){L.innerHTML='<div class="note">No customers in this view.</div>';return;}
+ rows.slice(0,400).forEach(x=>{
+  const div=document.createElement('div');div.className='row';
+  div.innerHTML=`<div class="top"><div><span class="badge ${LCLASS[x.lane]||'l5'}">${x.lane}</span><div class="nm">${x.tally_name}</div></div><div class="bal">Rs ${inr(x.outstanding)}</div></div>
+  <div class="meta">${x.has_phone?'<span class="ph-yes">Phone on file</span>':'<span class="ph-no">No phone</span>'}${x.last_receipt?' &middot; last receipt '+x.last_receipt:''}${x.promise_amount?' &middot; promised Rs '+inr(x.promise_amount)+' '+(x.promise_date||''):''}</div>
+  <div class="meta">Action: ${ACTION[x.lane]||''}</div>`;
+  L.appendChild(div);
+ });
+ if(rows.length>400)L.innerHTML+='<div class="note">Showing first 400 of '+rows.length+'. Use search/filter.</div>';
 }
-async function sbPost(table,body){
-  var r=await fetch(SURL+'/rest/v1/'+table,{method:'POST',headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
-  return r.ok;
+function fillDatalist(){const dl=document.getElementById('custlist');dl.innerHTML='';
+ [...new Set(QUEUE.map(x=>x.tally_name))].forEach(n=>{const o=document.createElement('option');o.value=n;dl.appendChild(o);});}
+
+function savePhones(){localStorage.setItem('mh_phones',JSON.stringify(phones));kpis();}
+function setP(key,f,v){phones[key]=phones[key]||{};phones[key][f]=v;if(f==='phone'&&v){phones[key].date=phones[key].date||todayStr();}savePhones();}
+function esc(s){return (s||'').replace(/'/g,"\\'");}
+function renderPhones(){
+ const q=(document.getElementById('q2').value||'').toLowerCase();
+ const L=document.getElementById('plist');L.innerHTML='';
+ const list=(QUEUE.length?QUEUE:[]).filter(x=>(x.tally_name||'').toLowerCase().includes(q));
+ if(!list.length){L.innerHTML='<div class="note">Queue loads after PIN. If empty, check connection.</div>';return;}
+ const seen=new Set();
+ list.slice(0,400).forEach(x=>{
+  if(seen.has(x.tally_name))return;seen.add(x.tally_name);
+  const key=x.tally_name;const p=phones[key]||{};
+  const div=document.createElement('div');div.className='row';
+  div.innerHTML=`<div class="top"><div class="nm">${x.tally_name}</div><div class="bal">Rs ${inr(x.outstanding)}</div></div>
+  <input type="tel" inputmode="numeric" placeholder="Phone${x.has_phone?' (in DB)':''}" value="${p.phone||''}" onchange="setP('${esc(key)}','phone',this.value)">
+  <div class="grid">
+   <select onchange="setP('${esc(key)}','source',this.value)"><option value="">Source...</option>${['Call','Visit','Counter','Memory','Bill','WhatsApp','Other'].map(s=>`<option ${p.source===s?'selected':''}>${s}</option>`).join('')}</select>
+   <div style="display:flex;gap:12px;align-items:center">
+    <span class="chk"><input type="checkbox" ${p.whatsapp?'checked':''} onchange="setP('${esc(key)}','whatsapp',this.checked)">WhatsApp</span>
+    <span class="chk"><input type="checkbox" ${p.verified?'checked':''} onchange="setP('${esc(key)}','verified',this.checked)">Verified</span>
+   </div>
+  </div>
+  <input placeholder="Notes (optional)" value="${(p.notes||'').replace(/"/g,'&quot;')}" onchange="setP('${esc(key)}','notes',this.value)">
+  ${p.phone?'<div class="unsaved">Not yet saved to database &mdash; export/copy for Claude write.</div>':''}`;
+  L.appendChild(div);
+ });
 }
-
-// ── LOAD DATA ──
-async function loadData(){
-  document.getElementById('LIST').innerHTML='<div class="msg">Loading customers...</div>';
-  document.getElementById('SYNC').textContent='Loading...';
-  all=await sbGetAll('customers?select=id,tally_name,display_name,type,phone,outstanding_amount,last_txn_date,last_contact_date,last_contact_channel,last_outcome,promise_date,promise_amount,promise_status,health,risk_score,priority_score,overdue_days,escalate_flag,next_followup,trust_level,relationship_strength,manual_priority_override,notes,preferred_contact_time&order=outstanding_amount.desc');
-  updateKPI();applyF();
-  document.getElementById('SYNC').textContent='Loaded '+all.length+' customers';
-  loadSyncTime();
+function saveLog(){
+ const cust=document.getElementById('f_cust').value.trim();if(!cust)return alert('Enter a customer.');
+ const e={tally_name:cust,channel:val('f_chan'),outcome:val('f_out'),promise_amount:val('f_pamt'),promise_date:val('f_pdate'),amount_collected:val('f_coll'),notes:val('f_notes'),logged_at:new Date().toISOString()};
+ logs.push(e);localStorage.setItem('mh_logs',JSON.stringify(logs));
+ ['f_pamt','f_pdate','f_coll','f_notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f_cust').value='';
+ renderLogs();kpis();alert('Saved locally. Export/Copy for Claude to write to DB.');
 }
-
-async function loadSyncTime(){
-  try{
-    var d=await sbGet('tally_sync_log?select=sync_end,records_updated&order=sync_end.desc&limit=1');
-    if(d&&d[0]&&d[0].sync_end){
-      var dt=new Date(d[0].sync_end);
-      document.getElementById('SYNC_TIME').textContent='Sync: '+dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-    }
-  }catch(e){}
+function val(id){return document.getElementById(id).value;}
+function renderLogs(){
+ document.getElementById('flcount').textContent=logs.filter(l=>(l.logged_at||'').slice(0,10)===todayStr()).length;
+ const L=document.getElementById('floglist');L.innerHTML='';
+ logs.slice().reverse().slice(0,40).forEach(l=>{const d=document.createElement('div');d.className='flog';
+  d.innerHTML=`<b>${l.tally_name}</b> &middot; ${l.channel} &middot; ${l.outcome}`+(l.promise_amount?` &middot; promise Rs ${inr(l.promise_amount)} ${l.promise_date||''}`:'')+(l.amount_collected?` &middot; collected Rs ${inr(l.amount_collected)}`:'')+(l.notes?`<br><span class="note">${l.notes}</span>`:'');
+  L.appendChild(d);});
 }
-
-// ── KPIs ──
-function updateKPI(){
-  var td=new Date().toISOString().slice(0,10);
-  var tot=0,bal=0,hr=0,pr=0;
-  all.forEach(function(c){
-    var a=parseFloat(c.outstanding_amount)||0;
-    if(a>0){tot+=a;bal++;}
-    if(a>0&&(c.overdue_days||0)>=90) hr++;
-    if(c.promise_date&&c.promise_date.slice(0,10)===td) pr++;
-  });
-  document.getElementById('K1').textContent='₹'+fmt(tot);
-  document.getElementById('K2').textContent=bal.toLocaleString('en-IN');
-  document.getElementById('K3').textContent=hr.toLocaleString('en-IN');
-  document.getElementById('K4').textContent=pr;
+function csvCell(c){c=(c==null?'':String(c));return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}
+function buildExport(){
+ const head='record_type,tally_name,phone,whatsapp,verified,source,channel,outcome,promise_amount,promise_date,amount_collected,notes';
+ const lines=[head];
+ Object.entries(phones).forEach(([name,p])=>{if(p.phone)lines.push(['phone',name,p.phone,p.whatsapp?'Yes':'No',p.verified?'Yes':'No',p.source||'','','','','','',p.notes||''].map(csvCell).join(','));});
+ logs.forEach(l=>{lines.push(['followup',l.tally_name,'','','','',l.channel,l.outcome,l.promise_amount,l.promise_date,l.amount_collected,l.notes].map(csvCell).join(','));});
+ return lines.join('\n');
 }
-
-function fmt(n){
-  if(n>=10000000) return (n/10000000).toFixed(2)+' Cr';
-  if(n>=100000) return (n/100000).toFixed(2)+' L';
-  if(n>=1000) return (n/1000).toFixed(1)+'K';
-  return Math.round(n).toLocaleString('en-IN');
-}
-
-// ── FILTERS + SORT ──
-function applyF(){
-  var q=(document.getElementById('SEARCH').value||'').toLowerCase().trim();
-  var f=document.getElementById('FILT').value;
-  var tp=document.getElementById('TYPT').value;
-  var hl=document.getElementById('HLTH').value;
-  var mn=parseFloat(document.getElementById('AMT_MIN').value)||0;
-  var mx=parseFloat(document.getElementById('AMT_MAX').value)||Infinity;
-  var s=document.getElementById('SORT').value;
-  var td=new Date().toISOString().slice(0,10);
-
-  fil=all.filter(function(c){
-    var a=parseFloat(c.outstanding_amount)||0;
-    if(q){
-      var nm=(c.display_name||c.tally_name||'').toLowerCase();
-      var ph=(c.phone||'').toLowerCase();
-      if(!nm.includes(q)&&!ph.includes(q)) return false;
-    }
-    if(f==='bal'&&a<=0) return false;
-    if(f==='ov60'&&(c.overdue_days||0)<60) return false;
-    if(f==='ov90'&&(c.overdue_days||0)<90) return false;
-    if(f==='pr'&&(!c.promise_date||c.promise_date.slice(0,10)!==td)) return false;
-    if(f==='esc'&&!c.escalate_flag) return false;
-    if(f==='nophone'&&c.phone) return false;
-    if(tp!=='all'&&(c.type||'unknown')!==tp) return false;
-    if(hl!=='all'&&(c.health||'Watch')!==hl) return false;
-    if(a<mn||a>mx) return false;
-    return true;
-  });
-
-  fil.sort(function(a,b){
-    if(s==='amt') return (parseFloat(b.outstanding_amount)||0)-(parseFloat(a.outstanding_amount)||0);
-    if(s==='priority'){
-      var pa=a.manual_priority_override||(parseFloat(a.priority_score)||0);
-      var pb=b.manual_priority_override||(parseFloat(b.priority_score)||0);
-      return pb-pa;
-    }
-    if(s==='overdue') return (b.overdue_days||0)-(a.overdue_days||0);
-    if(s==='followup'){
-      var fa=a.next_followup||'9999';var fb=b.next_followup||'9999';
-      return fa<fb?-1:fa>fb?1:0;
-    }
-    if(s==='name') return (a.display_name||a.tally_name||'').localeCompare(b.display_name||b.tally_name||'');
-    return 0;
-  });
-
-  page=1;
-  document.getElementById('RES_COUNT').textContent=fil.length.toLocaleString('en-IN')+' customers';
-  render();
-}
-
-function render(){
-  var start=(page-1)*PER,end=start+PER,slice=fil.slice(start,end);
-  var td=new Date().toISOString().slice(0,10);
-  if(!slice.length){document.getElementById('LIST').innerHTML='<div class="msg">No customers match this filter.</div>';document.getElementById('PGN').innerHTML='';return;}
-  var h='';
-  slice.forEach(function(c){
-    var a=parseFloat(c.outstanding_amount)||0;
-    var od=c.overdue_days||0;
-    var st=od>=90?'<span class="badge bh">90+ days</span>':od>=60?'<span class="badge bm">60+ days</span>':od>=30?'<span class="badge bm">30+ days</span>':a>0?'<span class="badge bl">Active</span>':'<span class="badge bz">Zero</span>';
-    if(c.escalate_flag) st+='<span class="escflag">!</span>';
-    var lc=c.last_contact_date?new Date(c.last_contact_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'—';
-    h+='<div class="crow" onclick="openModal(\''+c.id+'\')">'+
-      '<div><div class="cn">'+(c.display_name||c.tally_name||'')+'</div><div class="cm">'+(c.type||'')+(c.phone?' · '+c.phone:'')+'</div></div>'+
-      '<div class="cl">'+lc+'</div>'+
-      '<div class="ca '+(a>0?'pos':'neg')+'">₹'+fmt(Math.abs(a))+'</div>'+
-      '<div>'+st+'</div>'+
-    '</div>';
-  });
-  document.getElementById('LIST').innerHTML=h;
-
-  var total=Math.ceil(fil.length/PER);
-  document.getElementById('PGN').innerHTML=total>1?
-    '<button onclick="changePage(-1)" '+(page===1?'disabled':'')+'>← Prev</button>'+
-    '<span>'+page+' / '+total+'</span>'+
-    '<button onclick="changePage(1)" '+(page===total?'disabled':'')+'>Next →</button>':'';
-}
-
-function changePage(d){page+=d;render();window.scrollTo(0,0);}
-
-// ── MODAL ──
-async function openModal(id){
-  cur=all.find(function(c){return c.id===id;});
-  if(!cur) return;
-  var a=parseFloat(cur.outstanding_amount)||0;
-  document.getElementById('M_NAME').textContent=cur.display_name||cur.tally_name||'';
-  document.getElementById('M_AMT').textContent='₹'+fmt(Math.abs(a))+(a<=0?' (Nil)':'');
-  document.getElementById('M_META').textContent=(cur.type||'')+(cur.overdue_days?' · '+cur.overdue_days+' days overdue':'')+(cur.last_outcome?' · Last: '+cur.last_outcome:'');
-
-  // Prefill edit fields
-  document.getElementById('E_PHONE').value=cur.phone||'';
-  setVal('E_TYPE',cur.type||'Regular');
-  setVal('E_RISK',cur.health==='Critical'?'critical':cur.health==='Good'?'low':'medium');
-  setVal('E_HEALTH',cur.health||'Watch');
-  setVal('E_TRUST',cur.trust_level||'medium');
-  setVal('E_REL',cur.relationship_strength||'medium');
-  setVal('E_PCT',cur.preferred_contact_time||'');
-  document.getElementById('E_PRIO').value=cur.manual_priority_override||'';
-  setVal('E_ESC',cur.escalate_flag?'true':'false');
-  document.getElementById('E_NOTES').value=cur.notes||'';
-
-  // Prefill follow-up
-  document.getElementById('L_OUT').value='';
-  document.getElementById('L_CH').value='call';
-  document.getElementById('L_NOTE').value='';
-  document.getElementById('L_PD').value=cur.promise_date||'';
-  document.getElementById('L_PA').value=cur.promise_amount||'';
-  setVal('L_PS',cur.promise_status||'');
-  document.getElementById('L_NF').value=cur.next_followup||'';
-
-  // Call/WA buttons
-  document.getElementById('M_CALL').disabled=!cur.phone;
-  document.getElementById('M_WA').disabled=!cur.phone;
-
-  document.getElementById('OVL').style.display='block';
-  document.getElementById('MOD').style.display='flex';
-
-  // Load transactions
-  loadTxn(cur.id,cur.tally_name);
-}
-
-function setVal(id,v){var el=document.getElementById(id);if(!el)return;var found=false;for(var i=0;i<el.options.length;i++){if(el.options[i].value===v){el.selectedIndex=i;found=true;break;}}if(!found&&el.options.length)el.selectedIndex=0;}
-
-async function loadTxn(cid,name){
-  document.getElementById('M_TXN').innerHTML='<div class="msg" style="padding:12px">Loading...</div>';
-  try{
-    var d=await sbGet('tally_transactions?customer_id=eq.'+cid+'&order=date.desc&limit=10&select=date,vch_type,vch_number,amount');
-    if(!d||!d.length){
-      // fallback by name
-      d=await sbGet('tally_transactions?tally_name=eq.'+encodeURIComponent(name)+'&order=date.desc&limit=10&select=date,vch_type,vch_number,amount');
-    }
-    if(!d||!d.length){document.getElementById('M_TXN').innerHTML='<div class="msg" style="padding:12px">No transactions found.</div>';return;}
-    var h='<div class="tlist">';
-    d.forEach(function(t){
-      var am=parseFloat(t.amount)||0;
-      var cls=t.vch_type&&t.vch_type.toLowerCase()==='receipt'?'ta-r':'ta-s';
-      h+='<div class="trow"><div><div class="tt">'+(t.vch_type||'')+(t.vch_number?' #'+t.vch_number:'')+'</div><div class="td">'+(t.date||'')+'</div></div><div class="'+cls+'">₹'+fmt(Math.abs(am))+'</div></div>';
-    });
-    h+='</div>';
-    document.getElementById('M_TXN').innerHTML=h;
-  }catch(e){document.getElementById('M_TXN').innerHTML='<div class="msg" style="padding:12px">Error loading.</div>';}
-}
-
-function closeModal(e){
-  if(e&&e.target!==document.getElementById('OVL')) return;
-  document.getElementById('OVL').style.display='none';
-  document.getElementById('MOD').style.display='none';
-  cur=null;
-}
-
-function doCall(){if(cur&&cur.phone) window.open('tel:'+cur.phone);}
-function doWA(){
-  if(!cur||!cur.phone) return;
-  var ph=cur.phone.replace(/\D/g,'');
-  if(!ph.startsWith('91')) ph='91'+ph;
-  var a=parseFloat(cur.outstanding_amount)||0;
-  var msg=encodeURIComponent('Namaskar '+( cur.display_name||cur.tally_name)+' ji, aapka humare yahan ₹'+fmt(a)+' outstanding hai. Kripya jald bhugtaan karein. Dhanyawad — Mittal Hardware');
-  window.open('https://wa.me/'+ph+'?text='+msg);
-}
-
-// ── SAVE FOLLOW-UP ──
-async function saveLog(){
-  if(!cur) return;
-  var out=document.getElementById('L_OUT').value;
-  if(!out){toast('Select an outcome');return;}
-  var btn=document.getElementById('L_SAVE');
-  btn.disabled=true;btn.textContent='Saving...';
-  var now=new Date().toISOString();
-  var pd=document.getElementById('L_PD').value;
-  var pa=parseFloat(document.getElementById('L_PA').value)||null;
-  var nf=document.getElementById('L_NF').value;
-  var ps=document.getElementById('L_PS').value;
-
-  var log={customer_id:cur.id,tally_name:cur.tally_name,contacted_at:now,channel:document.getElementById('L_CH').value,outcome:out,notes:document.getElementById('L_NOTE').value,promise_date:pd||null,promise_amount:pa,agent_name:'Shanky'};
-  var ok1=await sbPost('follow_up_logs',log);
-
-  var upd={last_contact_date:now.slice(0,10),last_contact_channel:document.getElementById('L_CH').value,last_outcome:out,updated_at:now};
-  if(pd) upd.promise_date=pd;
-  if(pa) upd.promise_amount=pa;
-  if(ps) upd.promise_status=ps;
-  if(nf) upd.next_followup=nf;
-  if(out==='broke_promise') upd.broken_promise_count=(cur.broken_promise_count||0)+1;
-  upd.follow_up_count=(cur.follow_up_count||0)+1;
-  var ok2=await sbPatch('customers',cur.id,upd);
-
-  if(ok1&&ok2){
-    Object.assign(cur,upd);
-    var idx=all.findIndex(function(c){return c.id===cur.id;});
-    if(idx>=0) Object.assign(all[idx],upd);
-    toast('Follow-up logged ✓');
-    updateKPI();applyF();
-  } else toast('Error saving');
-  btn.disabled=false;btn.textContent='Save Follow-up Log';
-}
-
-// ── SAVE CUSTOMER ──
-async function saveCustomer(){
-  if(!cur) return;
-  var btn=document.getElementById('E_SAVE');
-  btn.disabled=true;btn.textContent='Saving...';
-  var upd={
-    phone:document.getElementById('E_PHONE').value.trim()||null,
-    type:document.getElementById('E_TYPE').value,
-    health:document.getElementById('E_HEALTH').value,
-    trust_level:document.getElementById('E_TRUST').value,
-    relationship_strength:document.getElementById('E_REL').value,
-    preferred_contact_time:document.getElementById('E_PCT').value||null,
-    escalate_flag:document.getElementById('E_ESC').value==='true',
-    notes:document.getElementById('E_NOTES').value.trim()||null,
-    updated_at:new Date().toISOString()
-  };
-  var prio=parseInt(document.getElementById('E_PRIO').value);
-  if(prio>=1&&prio<=10) upd.manual_priority_override=prio;
-  else upd.manual_priority_override=null;
-
-  var ok=await sbPatch('customers',cur.id,upd);
-  if(ok){
-    Object.assign(cur,upd);
-    var idx=all.findIndex(function(c){return c.id===cur.id;});
-    if(idx>=0) Object.assign(all[idx],upd);
-    toast('Customer saved ✓');
-    applyF();
-  } else toast('Error saving');
-  btn.disabled=false;btn.textContent='Save Customer Details';
-}
-
-// ── TABS ──
-function switchTab(t){
-  var isc=(t==='col');
-  document.getElementById('TB_COL').classList.toggle('active',isc);
-  document.getElementById('TB_KE').classList.toggle('active',!isc);
-  document.getElementById('TP_COL').classList.toggle('active',isc);
-  document.getElementById('TP_KE').classList.toggle('active',!isc);
-  if(!isc&&keAll.length===0) loadKE();
-}
-
-// ── KNOWLEDGE ENGINE ──
-async function loadKE(){
-  document.getElementById('KE_ACTIVE').innerHTML='<div class="ke-empty">Loading...</div>';
-  document.getElementById('KE_PENDING').innerHTML='<div class="ke-empty">Loading...</div>';
-  keAll=await sbGet('mios_knowledge?order=created_at.desc&limit=200');
-  keFilter();kePending();
-}
-
-function kbadge(t){var m={truth:['kb-truth','Truth'],discovery:['kb-discovery','Discovery'],decision:['kb-decision','Decision'],experiment:['kb-experiment','Experiment'],pattern:['kb-pattern','Pattern'],rule:['kb-rule','Rule']};var v=m[t]||['',''];return '<span class="kbadge '+v[0]+'">'+v[1]+'</span>';}
-
-function keFilter(){
-  var q=(document.getElementById('KE_SEARCH').value||'').toLowerCase();
-  var ft=document.getElementById('KE_TYPE').value;
-  var fd=document.getElementById('KE_DOM').value;
-  var act=keAll.filter(function(k){
-    if(k.status!=='active') return false;
-    if(ft!=='all'&&k.type!==ft) return false;
-    if(fd!=='all'&&k.domain!==fd) return false;
-    if(q&&!(k.title.toLowerCase().includes(q)||k.body.toLowerCase().includes(q))) return false;
-    return true;
-  });
-  document.getElementById('KE_COUNT').textContent=act.length+' entr'+(act.length===1?'y':'ies');
-  if(!act.length){document.getElementById('KE_ACTIVE').innerHTML='<div class="ke-empty">No matching knowledge.</div>';return;}
-  var grp={};act.forEach(function(k){if(!grp[k.type])grp[k.type]=[];grp[k.type].push(k);});
-  var order=['truth','discovery','decision','pattern','experiment','rule'];
-  var h='';
-  order.forEach(function(t){if(!grp[t])return;grp[t].forEach(function(k){
-    h+='<div class="ke-card"><div class="ke-ch"><div class="ke-ct">'+esc(k.title)+'</div>'+kbadge(k.type)+'</div>'+
-      '<div class="ke-cb">'+esc(k.body)+'</div>'+
-      (k.evidence?'<div class="ke-ev">'+esc(k.evidence)+'</div>':'')+
-      '<div class="ke-cm"><span>'+k.domain+'</span><span>'+k.confidence+'</span><span>'+new Date(k.created_at).toLocaleDateString('en-IN')+'</span></div></div>';
-  });});
-  document.getElementById('KE_ACTIVE').innerHTML=h;
-}
-
-function kePending(){
-  var p=keAll.filter(function(k){return k.status==='pending';});
-  if(!p.length){document.getElementById('KE_PENDING').innerHTML='<div class="ke-empty">No pending entries. All knowledge reviewed.</div>';return;}
-  var h='';
-  p.forEach(function(k){
-    h+='<div class="ke-card"><div class="ke-ch"><div class="ke-ct">'+esc(k.title)+'</div>'+kbadge(k.type)+'</div>'+
-      '<div class="ke-cb">'+esc(k.body)+'</div>'+
-      '<div class="ke-cm"><span>'+k.domain+'</span><span>Risk: '+k.risk_level+'</span></div>'+
-      '<div class="ke-actions"><button class="ke-btn ke-approve" onclick="keApprove(\''+k.id+'\')">&#10003; Approve</button><button class="ke-btn ke-reject" onclick="keReject(\''+k.id+'\')">&#10007; Reject</button></div></div>';
-  });
-  document.getElementById('KE_PENDING').innerHTML=h;
-}
-
-async function keApprove(id){
-  var ok=await sbPatch('mios_knowledge',id,{status:'active',auto_approved:false,approved_at:new Date().toISOString()});
-  if(ok){toast('Approved \u2713');var k=keAll.find(function(x){return x.id===id;});if(k)k.status='active';keFilter();kePending();}else toast('Error');
-}
-async function keReject(id){
-  var reason=prompt('Reason (optional):');
-  var ok=await sbPatch('mios_knowledge',id,{status:'rejected',rejected_at:new Date().toISOString(),rejection_reason:reason||''});
-  if(ok){toast('Rejected');var k=keAll.find(function(x){return x.id===id;});if(k)k.status='rejected';keFilter();kePending();}else toast('Error');
-}
-async function submitKE(){
-  var title=document.getElementById('KF_TITLE').value.trim();
-  var body=document.getElementById('KF_BODY').value.trim();
-  if(!title||!body){toast('Title and description required');return;}
-  var btn=document.getElementById('KF_SUB');
-  btn.disabled=true;btn.textContent='Saving...';
-  var risk=document.getElementById('KF_RISK').value;
-  var ok=await sbPost('mios_knowledge',{type:document.getElementById('KF_TYPE').value,domain:document.getElementById('KF_DOM').value,title:title,body:body,evidence:document.getElementById('KF_EV').value.trim()||null,confidence:document.getElementById('KF_CONF').value,risk_level:risk,status:risk==='low'?'active':'pending',auto_approved:risk==='low',approved_at:risk==='low'?new Date().toISOString():null,created_by:'shanky'});
-  if(ok){toast(risk==='low'?'Saved \u2713':'Saved \u2014 pending approval');document.getElementById('KF_TITLE').value='';document.getElementById('KF_BODY').value='';document.getElementById('KF_EV').value='';keAll=[];loadKE();}else toast('Error saving');
-  btn.disabled=false;btn.textContent='Save to Knowledge Engine';
-}
-
-function esc(s){if(!s)return '';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function toast(m){var t=document.getElementById('TOAST');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+function copyForClaude(){const t=buildExport();if(t.split('\n').length<2)return alert('Nothing captured yet.');navigator.clipboard.writeText(t).then(()=>alert('Copied. Paste in chat for Claude to write to the database.'));}
+function downloadCsv(){const t=buildExport();const b=new Blob([t],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='mittal_capture.csv';a.click();}
 </script>
-</body>
-</html>
+</body></html>
