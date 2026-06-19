@@ -1,229 +1,305 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mittal Collections</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Follow-up Command Center v0.2</title>
 <style>
-:root{--bg:#0f172a;--card:#1e293b;--line:#334155;--ink:#e2e8f0;--mut:#94a3b8;--acc:#38bdf8;--ok:#22c55e;--warn:#f59e0b;--red:#ef4444}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
-header{position:sticky;top:0;background:#0b1220;border-bottom:1px solid var(--line);padding:10px 12px;z-index:5}
-h1{font-size:16px;margin:0 0 8px}
-.tabs{display:flex;gap:6px}
-.tab{flex:1;padding:9px;border:1px solid var(--line);background:var(--card);color:var(--mut);border-radius:8px;text-align:center;font-weight:bold;cursor:pointer;font-size:13px}
-.tab.on{background:var(--acc);color:#04293a;border-color:var(--acc)}
-.wrap{padding:12px;max-width:820px;margin:0 auto}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px;text-align:center}
-.kpi b{display:block;font-size:18px}
-.kpi span{font-size:10px;color:var(--mut)}
-.note{font-size:12px;color:var(--mut);line-height:1.5}
-.lanebar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
-.lb{white-space:nowrap;padding:7px 10px;border:1px solid var(--line);background:var(--card);color:var(--mut);border-radius:20px;font-size:12px;cursor:pointer}
-.lb.on{background:var(--acc);color:#04293a;border-color:var(--acc)}
-input,select,textarea{font-size:15px;background:#0b1220;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:8px;width:100%}
-.search{margin-bottom:10px}
-.row{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
-.row .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.nm{font-weight:bold}
-.bal{color:var(--warn);white-space:nowrap;font-size:13px}
-.meta{font-size:12px;color:var(--mut);margin-top:3px}
-.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;margin-right:5px}
-.l1{background:#7f1d1d;color:#fecaca}.l2{background:#7c2d12;color:#fed7aa}.l3{background:#78350f;color:#fde68a}.l4{background:#3730a3;color:#c7d2fe}.l5{background:#334155;color:#cbd5e1}
-.ph-no{color:var(--red)}.ph-yes{color:var(--ok)}
-.act{background:var(--acc);color:#04293a;border:none;border-radius:8px;padding:11px;font-weight:bold;width:100%;font-size:15px;cursor:pointer}
-.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc)}
-.bar{display:flex;gap:8px;margin:10px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut)}.chk input{width:auto}
-label{font-size:12px;color:var(--mut);display:block;margin:6px 0 2px}
-.hide{display:none}
-.unsaved{font-size:11px;color:var(--warn);margin-top:4px}
-.pill{font-size:11px;background:#0b1220;border:1px solid var(--line);border-radius:20px;padding:2px 8px;color:var(--mut)}
-#gate{position:fixed;inset:0;background:#0b1220;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:50;padding:24px}
-#gate input{max-width:200px;text-align:center;font-size:22px;letter-spacing:6px}
-.flog{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:6px;font-size:13px}
+:root{--bg:#0b1220;--card:#1e293b;--card2:#172033;--line:#334155;--ink:#e2e8f0;--mut:#94a3b8;--acc:#38bdf8;--ok:#22c55e;--warn:#f59e0b;--red:#ef4444}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;font-family:-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+body{display:flex;flex-direction:column;overflow:hidden}
+.hide{display:none!important}
+#gate{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:60;padding:24px}
+#gate input{width:200px;text-align:center;font-size:26px;letter-spacing:8px;padding:12px;border-radius:12px;border:1px solid var(--line);background:#0f172a;color:var(--ink)}
+.bigbtn{background:var(--acc);color:#04293a;border:none;border-radius:14px;padding:15px 18px;font-weight:800;font-size:17px;width:100%}
+#top{flex:0 0 auto;padding:8px 10px;border-bottom:1px solid var(--line);background:#0b1220}
+.chips{display:flex;gap:6px}
+.chip{flex:1;text-align:center;padding:8px 4px;border:1px solid var(--line);border-radius:999px;font-size:12px;font-weight:700;color:var(--mut);background:var(--card2)}
+.chip.on{color:#04293a;background:var(--acc);border-color:var(--acc)}
+.statusrow{display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-size:12px;color:var(--mut)}
+.statusrow b{color:var(--ink)}
+.linkbtn{background:none;border:1px solid var(--line);color:var(--mut);border-radius:8px;padding:5px 9px;font-size:12px;font-weight:700}
+.linkbtn.acc{color:var(--acc);border-color:var(--acc)}
+.progress{height:7px;background:#0f172a;border:1px solid var(--line);border-radius:999px;margin-top:8px;overflow:hidden}
+.progress>i{display:block;height:100%;background:linear-gradient(90deg,var(--ok),var(--acc));width:0%}
+.progresslbl{font-size:11px;color:var(--mut);margin-top:4px;text-align:center}
+#stage{flex:1 1 auto;overflow:auto;display:flex;flex-direction:column;justify-content:center;padding:12px}
+.card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:9px}
+.badge{align-self:flex-start;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;letter-spacing:.5px}
+.b-OWNER{background:#7f1d1d;color:#fecaca}.b-DELEGATE{background:#78350f;color:#fde68a}.b-AUTO{background:#334155;color:#cbd5e1}
+.ovrtag{font-size:10px;color:var(--warn);font-weight:700;margin-left:6px}
+.name{font-size:23px;font-weight:800;line-height:1.15}
+.out{font-size:29px;font-weight:800;color:var(--warn)}
+.reason{font-size:13px;color:var(--mut);line-height:1.45}
+.action{font-size:13px;font-weight:700;color:var(--acc);background:#0b1220;border:1px solid #1e3a8a;border-radius:10px;padding:9px}
+.stats{display:flex;gap:6px}
+.stat{flex:1;background:#0f172a;border:1px solid var(--line);border-radius:10px;padding:7px;text-align:center}
+.stat b{display:block;font-size:13px}.stat span{font-size:10px;color:var(--mut)}
+.call{display:block;text-align:center;background:var(--ok);color:#04240f;border-radius:12px;padding:12px;font-weight:800;font-size:15px;text-decoration:none}
+.chrow{display:flex;gap:6px}
+.chbtn{flex:1;text-align:center;padding:7px;border:1px solid var(--line);border-radius:10px;font-size:12px;font-weight:700;color:var(--mut);background:#0f172a}
+.chbtn.on{color:#04293a;background:#cbd5e1;border-color:#cbd5e1}
+.ovrrow{display:flex;gap:6px;align-items:center}
+.ovr{flex:1;text-align:center;padding:8px 4px;border:1px dashed var(--line);border-radius:10px;font-size:11px;font-weight:700;color:var(--mut);background:#0f172a}
+.ovr.on{border-style:solid;color:#04293a;background:var(--warn);border-color:var(--warn)}
+.review{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ink);background:#0f172a;border:1px solid var(--line);border-radius:10px;padding:10px}
+.review input{width:20px;height:20px}
+#dock{flex:0 0 auto;padding:10px;border-top:1px solid var(--line);background:#0b1220}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.act{border:none;border-radius:14px;padding:15px 8px;font-size:15px;font-weight:800;color:#fff}
+.a-prom{background:#2563eb}.a-pp{background:#0ea5e9;color:#04293a}.a-pf{background:#15803d}.a-no{background:#475569}
+.a-cb{background:#7c3aed}.a-at{background:#b45309}.a-dis{background:#9f1239}.a-wn{background:#334155;color:var(--mut);border:1px solid var(--line)}
+.a-more{background:#0f172a;color:var(--mut);border:1px solid var(--line);grid-column:1/3;padding:11px}
+.panel{background:#172033;border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:9px}
+.panel input{font-size:18px;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0f172a;color:var(--ink);width:100%}
+.prow{display:flex;gap:8px}.prow>*{flex:1}
+.back{background:none;border:none;color:var(--mut);font-size:13px;font-weight:700;text-align:left;padding:2px 0}
+.tiny{font-size:12px;color:var(--mut)}
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;z-index:50}
+#sheet .inner{background:var(--card);border-top-left-radius:20px;border-top-right-radius:20px;border:1px solid var(--line);padding:16px;width:100%;display:flex;flex-direction:column;gap:11px;max-height:85%;overflow:auto}
+#done{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+#done .big{font-size:22px;font-weight:800}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:120px;background:#0f172a;border:1px solid var(--line);color:var(--ink);padding:10px 14px;border-radius:999px;font-size:13px;display:flex;gap:12px;align-items:center;z-index:55;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.toast button{background:none;border:none;color:var(--acc);font-weight:800;font-size:13px}
 </style></head>
 <body>
 
 <div id="gate">
-  <h1>Mittal Collections</h1>
-  <input id="pin" type="password" inputmode="numeric" placeholder="PIN" maxlength="6">
-  <button class="act" style="max-width:200px" onclick="checkPin()">Open</button>
-  <div class="note" id="pinmsg"></div>
+  <div style="font-size:20px;font-weight:800">Command Center</div>
+  <div class="tiny">v0.2 · speed release</div>
+  <input id="pin" type="password" inputmode="numeric" maxlength="6" placeholder="PIN">
+  <button class="bigbtn" style="width:200px" onclick="checkPin()">Start</button>
+  <div class="tiny" id="pmsg"></div>
 </div>
 
-<header>
-<h1>Mittal Collections</h1>
-<div class="tabs">
-<div class="tab on" id="tb1" onclick="show(1)">Daily Queue</div>
-<div class="tab" id="tb2" onclick="show(2)">Phone Capture</div>
-<div class="tab" id="tb3" onclick="show(3)">Follow-up Log</div>
-</div>
-</header>
-
-<div class="wrap">
-<div class="cards">
-<div class="kpi"><b id="k_total">-</b><span>Queue items</span></div>
-<div class="kpi"><b id="k_bnp">-</b><span>Buying not paying</span></div>
-<div class="kpi"><b id="k_hbn">-</b><span>High bal, no contact</span></div>
-<div class="kpi"><b id="k_due">-</b><span>Promise due today</span></div>
-<div class="kpi"><b id="k_brk">-</b><span>Broken promise</span></div>
-<div class="kpi"><b id="k_ph">0</b><span>Phones today</span></div>
-<div class="kpi"><b id="k_fl">0</b><span>Follow-ups today</span></div>
-<div class="kpi"><b id="k_dbfl">0</b><span>DB follow-ups</span></div>
-</div>
-<div id="dbnote" class="note" style="margin-bottom:10px"></div>
-
-<div id="p1">
-<div class="lanebar" id="lanebar"></div>
-<input class="search" id="q1" placeholder="Search name..." oninput="renderQueue()">
-<div id="qstatus" class="note">Loading queue...</div>
-<div id="qlist"></div>
+<div id="top" class="hide">
+  <div class="chips">
+    <div class="chip on" data-b="OWNER" onclick="setBucket('OWNER')">Owner</div>
+    <div class="chip" data-b="DELEGATE" onclick="setBucket('DELEGATE')">Delegate</div>
+    <div class="chip" data-b="AUTO" onclick="setBucket('AUTO')">Auto</div>
+    <div class="chip" data-b="ALL" onclick="setBucket('ALL')">All</div>
+  </div>
+  <div class="progress"><i id="pbar"></i></div>
+  <div class="progresslbl" id="plbl">Worked today 0 / 0</div>
+  <div class="statusrow">
+    <div>Left <b id="leftN">0</b></div>
+    <div style="display:flex;gap:6px">
+      <button class="linkbtn" id="undoBtn" onclick="undo()" style="display:none">Undo</button>
+      <button class="linkbtn acc" onclick="openSheet()">Sync <b id="pendN">0</b></button>
+    </div>
+  </div>
 </div>
 
-<div id="p2" class="hide">
-<div class="note" style="margin-bottom:8px">Capture saves on THIS device only. Tap "Copy for Claude" and paste in chat &mdash; Claude writes to the database safely. No password lives in this app.</div>
-<input class="search" id="q2" placeholder="Search name..." oninput="renderPhones()">
-<div id="plist"></div>
-<div class="bar"><button class="act ghost" onclick="copyForClaude()">Copy for Claude</button><button class="act ghost" onclick="downloadCsv()">Download CSV</button></div>
-</div>
+<div id="stage" class="hide"></div>
+<div id="dock" class="hide"></div>
 
-<div id="p3" class="hide">
-<div class="note" style="margin-bottom:8px"><b id="flcount">0</b> follow-ups logged on this device today. <span class="unsaved">Not yet saved to database &mdash; export/copy for Claude write.</span></div>
-<label>Customer</label>
-<input id="f_cust" list="custlist" placeholder="Type or pick a name">
-<datalist id="custlist"></datalist>
-<div class="grid">
-<div><label>Channel</label><select id="f_chan"><option>call</option><option>whatsapp</option><option>visit</option><option>sms</option><option>other</option></select></div>
-<div><label>Outcome</label><select id="f_out">
-<option>promised_payment</option><option>paid_partial</option><option>paid_full</option><option>no_answer</option><option>will_call_back</option><option>asked_for_time</option><option>disputed_amount</option><option>not_reachable</option><option>wrong_number</option><option>broken_promise</option></select></div>
-<div><label>Promise amount (Rs)</label><input id="f_pamt" type="number" inputmode="numeric"></div>
-<div><label>Promise date</label><input id="f_pdate" type="date"></div>
-<div><label>Amount collected (Rs)</label><input id="f_coll" type="number" inputmode="numeric"></div>
-<div><label>&nbsp;</label><span class="pill" id="today"></span></div>
-</div>
-<label>Notes</label><textarea id="f_notes" rows="2" placeholder="What was agreed / context"></textarea>
-<div class="bar"><button class="act" onclick="saveLog()">Save follow-up</button></div>
-<div class="bar"><button class="act ghost" onclick="copyForClaude()">Copy for Claude</button><button class="act ghost" onclick="downloadCsv()">Download CSV</button></div>
-<div id="floglist"></div>
-</div>
+<div id="sheet" class="hide" onclick="if(event.target.id==='sheet')closeSheet()">
+  <div class="inner">
+    <div style="font-weight:800;font-size:16px">Sync today's work</div>
+    <div class="tiny">Captured on this phone only. Tap <b>Copy for Claude</b> and paste in the Claude chat — Claude writes outcomes into follow_up_logs and records overrides + review flags. Nothing is sent automatically.</div>
+    <div id="sheetCount" class="tiny"></div>
+    <button class="bigbtn" onclick="copyClaude()">Copy for Claude</button>
+    <button class="bigbtn" style="background:#334155;color:#e2e8f0" onclick="downloadCsv()">Download CSV</button>
+    <button class="bigbtn" style="background:#0f172a;color:#94a3b8;border:1px solid #334155" onclick="closeSheet()">Close</button>
+  </div>
 </div>
 
 <script>
 const SB_URL="https://bsjrihrekfsxmajdsyhc.supabase.co";
 const SB_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzanJpaHJla2ZzeG1hamRzeWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTU2NDMsImV4cCI6MjA5NjU3MTY0M30.IZppzvvVOkeXjiDy-sJw5P37nxpHlSZUx8O8BdIBMkU";
-const GATE_PIN="2812";
-const inr=n=>n==null?'':Number(n).toLocaleString('en-IN');
-const todayStr=()=>new Date().toISOString().slice(0,10);
-document.getElementById('today').textContent=todayStr();
-let QUEUE=[], laneFilter='All';
-let phones=JSON.parse(localStorage.getItem('mh_phones')||'{}');
-let logs=JSON.parse(localStorage.getItem('mh_logs')||'[]');
+const PIN="2812";
+const H={apikey:SB_ANON,Authorization:"Bearer "+SB_ANON};
+const today=new Date().toISOString().slice(0,10);
+const inr=n=>n==null||n===''?'—':Number(n).toLocaleString('en-IN');
+const $=id=>document.getElementById(id);
 
-function checkPin(){if(document.getElementById('pin').value===GATE_PIN){document.getElementById('gate').style.display='none';boot();}else{document.getElementById('pinmsg').textContent='Wrong PIN';}}
-document.getElementById('pin').addEventListener('keydown',e=>{if(e.key==='Enter')checkPin();});
+let BUCKET='OWNER', CH='call';
+let queue=[], work=[], cur=null;
+let det={};
+let logs=JSON.parse(localStorage.getItem('cc_logs')||'[]');
+let ovr=JSON.parse(localStorage.getItem('cc_ovr')||'{}');
+let rev=JSON.parse(localStorage.getItem('cc_rev')||'{}');
+const doneKey='cc_done_'+today;
+let done=new Set(JSON.parse(localStorage.getItem(doneKey)||'[]'));
+let lastKey=null;
 
-function show(n){[1,2,3].forEach(i=>{document.getElementById('tb'+i).classList.toggle('on',i===n);document.getElementById('p'+i).classList.toggle('hide',i!==n);});}
+function checkPin(){ if($('pin').value===PIN){ $('gate').classList.add('hide'); ['top','stage','dock'].forEach(i=>$(i).classList.remove('hide')); boot(); } else { $('pmsg').textContent='Wrong PIN'; } }
+$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')checkPin();});
 
-const ACTION={'Promise due today':'Confirm payment today','Broken promise':'Firm follow-up; re-promise','No answer - recall':'Call again / other channel','Buying not paying':'Credit hold review; ask payment','High balance, not contacted':'First contact; get phone + ask payment'};
-const LANES=['All','Promise due today','Broken promise','No answer - recall','Buying not paying','High balance, not contacted'];
-const LCLASS={'Promise due today':'l1','Broken promise':'l2','No answer - recall':'l3','Buying not paying':'l4','High balance, not contacted':'l5'};
+async function fetchAll(path){
+  let out=[],from=0;const step=1000;
+  while(true){
+    const r=await fetch(SB_URL+path,{headers:{...H,Range:from+'-'+(from+step-1)}});
+    const a=await r.json(); if(!Array.isArray(a))break;
+    out=out.concat(a); if(a.length<step)break; from+=step;
+  }
+  return out;
+}
 
 async function boot(){
- renderLanes();renderPhones();renderLogs();
- try{
-  const r=await fetch(SB_URL+"/rest/v1/daily_collections_queue?select=*&order=lane_order.asc,outstanding.desc",{headers:{apikey:SB_ANON,Authorization:"Bearer "+SB_ANON}});
-  QUEUE=await r.json();
-  if(!Array.isArray(QUEUE))throw new Error('bad');
-  document.getElementById('qstatus').textContent='';
- }catch(e){document.getElementById('qstatus').textContent='Could not load queue. Check connection.';QUEUE=[];}
- try{const r2=await fetch(SB_URL+"/rest/v1/follow_up_logs?select=id",{headers:{apikey:SB_ANON,Authorization:"Bearer "+SB_ANON,Prefer:"count=exact",Range:"0-0"}});
-  const cr=r2.headers.get('content-range');const dbn=cr?parseInt(cr.split('/')[1]):0;
-  document.getElementById('k_dbfl').textContent=isNaN(dbn)?0:dbn;
-  document.getElementById('dbnote').textContent=(dbn>0)?'':'No real follow-up records yet in the database. Logs captured here are local until exported and written.';
- }catch(e){}
- kpis();renderQueue();fillDatalist();
+  const dk='cc_det_'+today;
+  const cached=localStorage.getItem(dk);
+  if(cached){ det=JSON.parse(cached); }
+  else{
+    const rows=await fetchAll("/rest/v1/customers?select=tally_name,display_name,phone,total_sales,total_receipts,last_txn_date&outstanding_amount=gt.0");
+    rows.forEach(r=>{ const disp=r.display_name||r.tally_name; det[disp]={tally_name:r.tally_name,phone:r.phone||'',sales:r.total_sales,receipts:r.total_receipts,last_txn:r.last_txn_date}; });
+    try{localStorage.setItem(dk,JSON.stringify(det));}catch(e){}
+  }
+  loadBucket('OWNER');
 }
-function kpis(){
- document.getElementById('k_total').textContent=QUEUE.length;
- const c=l=>QUEUE.filter(x=>x.lane===l).length;
- document.getElementById('k_bnp').textContent=c('Buying not paying');
- document.getElementById('k_hbn').textContent=c('High balance, not contacted');
- document.getElementById('k_due').textContent=c('Promise due today');
- document.getElementById('k_brk').textContent=c('Broken promise');
- document.getElementById('k_ph').textContent=Object.values(phones).filter(p=>p.phone&&p.date===todayStr()).length;
- document.getElementById('k_fl').textContent=logs.filter(l=>(l.logged_at||'').slice(0,10)===todayStr()).length;
-}
-function renderLanes(){const b=document.getElementById('lanebar');b.innerHTML='';
- LANES.forEach(l=>{const d=document.createElement('div');d.className='lb'+(l===laneFilter?' on':'');d.textContent=l;d.onclick=()=>{laneFilter=l;renderLanes();renderQueue();};b.appendChild(d);});}
-function renderQueue(){
- const q=(document.getElementById('q1').value||'').toLowerCase();
- const L=document.getElementById('qlist');L.innerHTML='';
- let rows=QUEUE.filter(x=>laneFilter==='All'||x.lane===laneFilter).filter(x=>(x.tally_name||'').toLowerCase().includes(q));
- if(!rows.length){L.innerHTML='<div class="note">No customers in this view.</div>';return;}
- rows.slice(0,400).forEach(x=>{
-  const div=document.createElement('div');div.className='row';
-  div.innerHTML=`<div class="top"><div><span class="badge ${LCLASS[x.lane]||'l5'}">${x.lane}</span><div class="nm">${x.tally_name}</div></div><div class="bal">Rs ${inr(x.outstanding)}</div></div>
-  <div class="meta">${x.has_phone?'<span class="ph-yes">Phone on file</span>':'<span class="ph-no">No phone</span>'}${x.last_receipt?' &middot; last receipt '+x.last_receipt:''}${x.promise_amount?' &middot; promised Rs '+inr(x.promise_amount)+' '+(x.promise_date||''):''}</div>
-  <div class="meta">Action: ${ACTION[x.lane]||''}</div>`;
-  L.appendChild(div);
- });
- if(rows.length>400)L.innerHTML+='<div class="note">Showing first 400 of '+rows.length+'. Use search/filter.</div>';
-}
-function fillDatalist(){const dl=document.getElementById('custlist');dl.innerHTML='';
- [...new Set(QUEUE.map(x=>x.tally_name))].forEach(n=>{const o=document.createElement('option');o.value=n;dl.appendChild(o);});}
 
-function savePhones(){localStorage.setItem('mh_phones',JSON.stringify(phones));kpis();}
-function setP(key,f,v){phones[key]=phones[key]||{};phones[key][f]=v;if(f==='phone'&&v){phones[key].date=phones[key].date||todayStr();}savePhones();}
-function esc(s){return (s||'').replace(/'/g,"\\'");}
-function renderPhones(){
- const q=(document.getElementById('q2').value||'').toLowerCase();
- const L=document.getElementById('plist');L.innerHTML='';
- const list=(QUEUE.length?QUEUE:[]).filter(x=>(x.tally_name||'').toLowerCase().includes(q));
- if(!list.length){L.innerHTML='<div class="note">Queue loads after PIN. If empty, check connection.</div>';return;}
- const seen=new Set();
- list.slice(0,400).forEach(x=>{
-  if(seen.has(x.tally_name))return;seen.add(x.tally_name);
-  const key=x.tally_name;const p=phones[key]||{};
-  const div=document.createElement('div');div.className='row';
-  div.innerHTML=`<div class="top"><div class="nm">${x.tally_name}</div><div class="bal">Rs ${inr(x.outstanding)}</div></div>
-  <input type="tel" inputmode="numeric" placeholder="Phone${x.has_phone?' (in DB)':''}" value="${p.phone||''}" onchange="setP('${esc(key)}','phone',this.value)">
-  <div class="grid">
-   <select onchange="setP('${esc(key)}','source',this.value)"><option value="">Source...</option>${['Call','Visit','Counter','Memory','Bill','WhatsApp','Other'].map(s=>`<option ${p.source===s?'selected':''}>${s}</option>`).join('')}</select>
-   <div style="display:flex;gap:12px;align-items:center">
-    <span class="chk"><input type="checkbox" ${p.whatsapp?'checked':''} onchange="setP('${esc(key)}','whatsapp',this.checked)">WhatsApp</span>
-    <span class="chk"><input type="checkbox" ${p.verified?'checked':''} onchange="setP('${esc(key)}','verified',this.checked)">Verified</span>
-   </div>
-  </div>
-  <input placeholder="Notes (optional)" value="${(p.notes||'').replace(/"/g,'&quot;')}" onchange="setP('${esc(key)}','notes',this.value)">
-  ${p.phone?'<div class="unsaved">Not yet saved to database &mdash; export/copy for Claude write.</div>':''}`;
-  L.appendChild(div);
- });
+async function loadBucket(b){
+  BUCKET=b;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.b===b));
+  $('stage').innerHTML='<div class="tiny" style="text-align:center">Loading…</div>';
+  const filter = b==='ALL' ? '' : '&attention_bucket=eq.'+b;
+  queue = await fetchAll("/rest/v1/attention_queue_v0_1?order=outstanding.desc"+filter);
+  render();
 }
-function saveLog(){
- const cust=document.getElementById('f_cust').value.trim();if(!cust)return alert('Enter a customer.');
- const e={tally_name:cust,channel:val('f_chan'),outcome:val('f_out'),promise_amount:val('f_pamt'),promise_date:val('f_pdate'),amount_collected:val('f_coll'),notes:val('f_notes'),logged_at:new Date().toISOString()};
- logs.push(e);localStorage.setItem('mh_logs',JSON.stringify(logs));
- ['f_pamt','f_pdate','f_coll','f_notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f_cust').value='';
- renderLogs();kpis();alert('Saved locally. Export/Copy for Claude to write to DB.');
+function setBucket(b){ if(b!==BUCKET) loadBucket(b); }
+
+function hidden(name){
+  if(done.has(name)) return true;
+  const o=ovr[name];
+  if(o && BUCKET!=='ALL' && o.owner!==BUCKET) return true;
+  return false;
 }
-function val(id){return document.getElementById(id).value;}
-function renderLogs(){
- document.getElementById('flcount').textContent=logs.filter(l=>(l.logged_at||'').slice(0,10)===todayStr()).length;
- const L=document.getElementById('floglist');L.innerHTML='';
- logs.slice().reverse().slice(0,40).forEach(l=>{const d=document.createElement('div');d.className='flog';
-  d.innerHTML=`<b>${l.tally_name}</b> &middot; ${l.channel} &middot; ${l.outcome}`+(l.promise_amount?` &middot; promise Rs ${inr(l.promise_amount)} ${l.promise_date||''}`:'')+(l.amount_collected?` &middot; collected Rs ${inr(l.amount_collected)}`:'')+(l.notes?`<br><span class="note">${l.notes}</span>`:'');
-  L.appendChild(d);});
+function rebuild(){
+  work = queue.filter(r=>!hidden(r.customer_name));
+  cur = work[0] || null;
+  const total=queue.length;
+  const workedToday=queue.filter(r=>done.has(r.customer_name)).length;
+  $('leftN').textContent=work.length;
+  $('pendN').textContent=logs.length;
+  const pct= total? Math.round(workedToday/total*100):0;
+  $('pbar').style.width=pct+'%';
+  $('plbl').textContent='Worked today '+workedToday+' / '+total+' '+(BUCKET==='ALL'?'':BUCKET.toLowerCase())+' customers';
+  $('undoBtn').style.display= lastKey ? 'inline-block':'none';
 }
+
+function render(){
+  rebuild();
+  const stage=$('stage'), dock=$('dock');
+  if(!cur){
+    stage.innerHTML='<div id="done"><div class="big">All '+(BUCKET==='ALL'?'':BUCKET.toLowerCase()+' ')+'customers handled today ✅</div><div class="tiny">'+logs.length+' outcomes captured. Sync to save.</div><button class="bigbtn" onclick="openSheet()">Sync to database</button>'+(BUCKET==='OWNER'?'<button class="bigbtn" style="background:#334155;color:#e2e8f0" onclick="setBucket(\'DELEGATE\')">Go to Delegate list</button>':'')+'</div>';
+    dock.innerHTML=''; return;
+  }
+  const d=det[cur.customer_name]||{};
+  const o=ovr[cur.customer_name];
+  const effBucket=o?o.owner:cur.attention_bucket;
+  const isRev=!!rev[cur.customer_name];
+  stage.innerHTML=
+   '<div class="card">'
+   +'<div><span class="badge b-'+effBucket+'">'+effBucket+'</span>'+(o?'<span class="ovrtag">owner-set (engine: '+o.engine+')</span>':'')+'</div>'
+   +'<div class="name">'+cur.customer_name+'</div>'
+   +'<div class="out">₹'+inr(cur.outstanding)+'</div>'
+   +'<div class="stats">'
+     +'<div class="stat"><b>₹'+inr(d.sales)+'</b><span>Total sales</span></div>'
+     +'<div class="stat"><b>₹'+inr(d.receipts)+'</b><span>Total receipts</span></div>'
+     +'<div class="stat"><b>'+(d.last_txn||'—')+'</b><span>Last txn</span></div>'
+   +'</div>'
+   +'<div class="reason">'+cur.reason+'</div>'
+   +'<div class="action">→ '+cur.recommended_action+'</div>'
+   +(d.phone?'<a class="call" href="tel:'+d.phone+'">📞 Call '+d.phone+'</a>':'')
+   +'<div class="chrow">'+chbtn('call','Call')+chbtn('visit','Visit')+chbtn('whatsapp','WhatsApp')+'</div>'
+   +'<div class="ovrrow">'
+     +ovrbtn('OWNER','Owner')+ovrbtn('DELEGATE','Delegate')+ovrbtn('AUTO','Auto')
+   +'</div>'
+   +'<label class="review"><input type="checkbox" '+(isRev?'checked':'')+' onchange="toggleReview(this.checked)"> Requires review</label>'
+   +'</div>';
+  dockMain();
+}
+function chbtn(v,l){return '<button class="chbtn '+(CH===v?'on':'')+'" onclick="setCh(\''+v+'\')">'+l+'</button>';}
+function setCh(v){CH=v;render();}
+function ovrbtn(b,l){const o=ovr[cur.customer_name];const on=o&&o.owner===b;return '<button class="ovr '+(on?'on':'')+'" onclick="setOverride(\''+b+'\')">'+l+'</button>';}
+
+function setOverride(b){
+  const name=cur.customer_name, engine=cur.attention_bucket;
+  if(ovr[name] && ovr[name].owner===b){ delete ovr[name]; }
+  else { ovr[name]={owner:b,engine:engine}; }
+  localStorage.setItem('cc_ovr',JSON.stringify(ovr));
+  if(ovr[name] && BUCKET!=='ALL' && b!==BUCKET){ toast('moved to '+b); render(); }
+  else { render(); }
+}
+function toggleReview(on){
+  const name=cur.customer_name;
+  if(on){ rev[name]={bucket:cur.attention_bucket,outstanding:cur.outstanding,reason:cur.reason}; }
+  else { delete rev[name]; }
+  localStorage.setItem('cc_rev',JSON.stringify(rev));
+}
+
+function dockMain(){
+  $('dock').innerHTML=
+   '<div class="grid2">'
+   +'<button class="act a-prom" onclick="panelProm()">🤝 Promised</button>'
+   +'<button class="act a-pp" onclick="panelPartial()">💵 Paid partial</button>'
+   +'<button class="act a-pf" onclick="log(\'paid_full\')">✅ Paid full</button>'
+   +'<button class="act a-no" onclick="log(\'no_answer\')">📵 No answer</button>'
+   +'<button class="act a-cb" onclick="log(\'will_call_back\')">↩️ Call back</button>'
+   +'<button class="act a-at" onclick="log(\'asked_for_time\')">⏳ Asked time</button>'
+   +'<button class="act a-dis" onclick="log(\'disputed_amount\')">⚠️ Disputed</button>'
+   +'<button class="act a-wn" onclick="log(\'wrong_number\')">❌ Wrong number</button>'
+   +'<button class="act a-more" onclick="dockMore()">⋯ More · Skip</button>'
+   +'</div>';
+}
+function dockMore(){
+  $('dock').innerHTML=
+   '<button class="back" onclick="dockMain()">‹ back</button>'
+   +'<div class="grid2">'
+   +'<button class="act a-no" onclick="log(\'not_reachable\')">🚫 Not reachable</button>'
+   +'<button class="act a-dis" onclick="log(\'broken_promise\')">💔 Broke promise</button>'
+   +'<button class="act a-wn" style="grid-column:1/3" onclick="skip()">⏭ Skip (no contact)</button>'
+   +'</div>';
+}
+function panelPartial(){
+  $('dock').innerHTML='<button class="back" onclick="dockMain()">‹ back</button><div class="panel"><input id="pa" type="number" inputmode="numeric" placeholder="Amount received ₹"><button class="act a-pp" onclick="log(\'paid_partial\',{coll:$(\'pa\').value})">Save & Next</button></div>';
+  setTimeout(()=>$('pa').focus(),50);
+}
+function panelProm(){
+  $('dock').innerHTML='<button class="back" onclick="dockMain()">‹ back</button><div class="panel"><div class="prow"><input id="pm" type="number" inputmode="numeric" placeholder="Promised ₹"><input id="pd" type="date"></div><button class="act a-prom" onclick="log(\'promised_payment\',{pamt:$(\'pm\').value,pdate:$(\'pd\').value})">Save & Next</button></div>';
+  setTimeout(()=>$('pm').focus(),50);
+}
+
+function log(outcome,extra){
+  extra=extra||{};
+  const e={ name:cur.customer_name, tally_name:(det[cur.customer_name]||{}).tally_name||cur.customer_name,
+    bucket:(ovr[cur.customer_name]?ovr[cur.customer_name].owner:cur.attention_bucket),
+    channel:CH, outcome, promise_amount:extra.pamt||'', promise_date:extra.pdate||'', amount_collected:extra.coll||'', notes:'', logged_at:new Date().toISOString() };
+  logs.push(e); localStorage.setItem('cc_logs',JSON.stringify(logs));
+  done.add(cur.customer_name); localStorage.setItem(doneKey,JSON.stringify([...done]));
+  lastKey=cur.customer_name; toast(outcome.replace(/_/g,' ')); render();
+}
+function skip(){ if(cur){ const n=cur.customer_name; queue=queue.filter(r=>r.customer_name!==n).concat(queue.filter(r=>r.customer_name===n)); render(); } }
+function undo(){
+  if(!lastKey)return;
+  for(let i=logs.length-1;i>=0;i--){ if(logs[i].name===lastKey){ logs.splice(i,1); break; } }
+  localStorage.setItem('cc_logs',JSON.stringify(logs));
+  done.delete(lastKey); localStorage.setItem(doneKey,JSON.stringify([...done]));
+  lastKey=null; render();
+}
+let toastT=null;
+function toast(msg){
+  let t=document.querySelector('.toast'); if(t)t.remove();
+  t=document.createElement('div'); t.className='toast';
+  t.innerHTML='✓ '+msg+' <button onclick="undo();this.parentNode.remove()">Undo</button>';
+  document.body.appendChild(t); clearTimeout(toastT); toastT=setTimeout(()=>t.remove(),2400);
+}
+
+function openSheet(){
+  const nf=logs.length, no=Object.keys(ovr).length, nr=Object.keys(rev).length;
+  $('sheetCount').textContent=nf+' outcomes · '+no+' bucket overrides · '+nr+' review flags captured.';
+  $('sheet').classList.remove('hide');
+}
+function closeSheet(){ $('sheet').classList.add('hide'); }
 function csvCell(c){c=(c==null?'':String(c));return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}
 function buildExport(){
- const head='record_type,tally_name,phone,whatsapp,verified,source,channel,outcome,promise_amount,promise_date,amount_collected,notes';
- const lines=[head];
- Object.entries(phones).forEach(([name,p])=>{if(p.phone)lines.push(['phone',name,p.phone,p.whatsapp?'Yes':'No',p.verified?'Yes':'No',p.source||'','','','','','',p.notes||''].map(csvCell).join(','));});
- logs.forEach(l=>{lines.push(['followup',l.tally_name,'','','','',l.channel,l.outcome,l.promise_amount,l.promise_date,l.amount_collected,l.notes].map(csvCell).join(','));});
- return lines.join('\n');
+  const head='record_type,tally_name,phone,whatsapp,verified,source,channel,outcome,promise_amount,promise_date,amount_collected,notes';
+  const lines=[head];
+  logs.forEach(l=>{ lines.push(['followup',l.tally_name,'','','','',l.channel,l.outcome,l.promise_amount,l.promise_date,l.amount_collected,l.notes].map(csvCell).join(',')); });
+  Object.entries(ovr).forEach(([name,o])=>{ const tn=(det[name]||{}).tally_name||name; lines.push(['override',tn,'','','','','','engine_'+o.engine+'_to_'+o.owner,'','','','owner re-bucketed'].map(csvCell).join(',')); });
+  Object.entries(rev).forEach(([name,r])=>{ const tn=(det[name]||{}).tally_name||name; lines.push(['review',tn,'','','','','','requires_review','','','','bucket='+r.bucket+'; outstanding='+r.outstanding].map(csvCell).join(',')); });
+  return lines.join('\n');
 }
-function copyForClaude(){const t=buildExport();if(t.split('\n').length<2)return alert('Nothing captured yet.');navigator.clipboard.writeText(t).then(()=>alert('Copied. Paste in chat for Claude to write to the database.'));}
-function downloadCsv(){const t=buildExport();const b=new Blob([t],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='mittal_capture.csv';a.click();}
+function copyClaude(){ if(logs.length===0&&Object.keys(ovr).length===0&&Object.keys(rev).length===0)return alert('Nothing captured yet.'); navigator.clipboard.writeText(buildExport()).then(()=>alert('Copied. Paste in the Claude chat to save.')); }
+function downloadCsv(){ const b=new Blob([buildExport()],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='command_v0_2_'+today+'.csv'; a.click(); }
 </script>
 </body></html>
